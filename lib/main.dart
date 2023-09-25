@@ -1,4 +1,5 @@
 import 'package:aplikasi_berbasis_database/screens/LoginForm.dart';
+import 'package:aplikasi_berbasis_database/screens/beranda.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginForm(),
+      home: beranda(),
     );
   }
 }

@@ -15,7 +15,7 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Cashbook'),
+        title: Text('My CashBook'),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -113,7 +113,15 @@ class _LoginFormState extends State<LoginForm> {
                     color: Colors.blue,
                     borderRadius: BorderRadius.circular(20.0)
                   ),
-                )
+                ),
+                Text(
+                  'My CashBook V1.0',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black38,
+                    fontSize: 15.0,
+                  ),
+                ),
               ],
             ),
           ),
