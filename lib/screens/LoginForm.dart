@@ -1,4 +1,7 @@
+import 'package:aplikasi_berbasis_database/screens/beranda.dart';
 import 'package:flutter/material.dart';
+import 'package:aplikasi_berbasis_database/database/DatabaseHelper.dart';
+import 'package:aplikasi_berbasis_database/session/session_utils.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -9,6 +12,7 @@ class _LoginFormState extends State<LoginForm> {
   bool _isPasswordObscure = true; // Untuk mengontrol apakah teks kata sandi harus disembunyikan
   bool _isPasswordFilled = false; // Untuk mengontrol apakah field kata sandi sudah diisi
 
+  TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -43,6 +47,7 @@ class _LoginFormState extends State<LoginForm> {
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   margin: EdgeInsets.only(top: 20.0),
                   child: TextFormField(
+                    controller: _usernameController,
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(20.0)),
@@ -107,11 +112,71 @@ class _LoginFormState extends State<LoginForm> {
                       'LOGIN',
                       style: TextStyle(color: Colors.white),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      // Validasi input
+                      final username = _usernameController.text;
+                      final password = _passwordController.text;
+
+                      if (username.isNotEmpty && password.isNotEmpty) {
+                        // Proses login
+                        bool loggedIn = await DatabaseHelper.instance.loginUser(username, password);
+
+                        if (loggedIn) {
+                          // Login berhasil, simpan username dalam sesi
+                          await saveUsernameInSession(username);
+
+                          // Login berhasil, arahkan ke halaman lain
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => beranda(),
+                            ),
+                          );
+                        } else {
+                          // Login gagal, tampilkan pesan kesalahan
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text('Login Gagal'),
+                                content: Text('Nama pengguna atau kata sandi salah.'),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      } else {
+                        // Tampilkan pesan jika ada field yang kosong
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Peringatan'),
+                              content: Text('Harap isi semua field.'),
+                              actions: <Widget>[
+                                FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(20.0)
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(20.0)
                   ),
                 ),
                 Text(
@@ -132,6 +197,7 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   void dispose() {
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
